@@ -11,12 +11,12 @@ namespace Storage
             builder.Services.AddDbContext<StorageContext>(options =>
                 options.UseSqlServer(builder.Configuration.GetConnectionString("StorageContext") ?? throw new InvalidOperationException("Connection string 'StorageContext' not found.")));
 
-            // Add services to the container.
+            // Add services to the container. We can add our own
             builder.Services.AddControllersWithViews();
 
             var app = builder.Build();
 
-            // Configure the HTTP request pipeline.
+            // Configure the HTTP request pipeline. //Middleware part - start with Use
             if (!app.Environment.IsDevelopment())
             {
                 app.UseExceptionHandler("/Home/Error");

@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
+﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Storage.Data;
 using Storage.Models;
@@ -153,5 +148,38 @@ namespace Storage.Controllers
         {
             return _context.Product.Any(e => e.Id == id);
         }
+
+        public IActionResult ProductList()
+        {
+            var products = _context.Product.Select(product => new ProductViewModel
+            {
+                Id = product.Id,
+                Name = product.Name,
+                Price = product.Price,
+                Count = product.Count,
+                InventoryValue = product.Price * product.Count,
+            }).ToList();
+
+            return View("ProductList",products);
+        }
+
+        public async Task<IActionResult> FilterProducts(string category)
+        {
+            if (!string.IsNullOrEmpty(category))
+            {
+                var products = _context.Product.Where(product => product.Category.Contains(category))
+                .Select(product => new ProductViewModel
+                {
+                    Id = product.Id,
+                    Name = product.Name,
+                    Price = product.Price,
+                    Count = product.Count,
+                    InventoryValue = product.Price * product.Count,
+                });
+                return View("ProductList", await products.ToListAsync());
+            } else  return RedirectToAction(nameof(ProductList));
+        }
+
+       
     }
 }
